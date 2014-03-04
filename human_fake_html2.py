@@ -98,16 +98,23 @@ def line_tokenize(text):
     """
     current_line = []
     after_equals = False
+
     for block in tokenize(text):
+
         if block.startswith('\n'):
             if len(current_line) > 1:
                 if after_equals != False:
                     current_line.append(' '.join(after_equals))
                     after_equals = False
                 yield current_line
+            elif len(current_line) == 1 and len(current_line[0].strip()):
+                yield current_line
+
             current_line = [block[1:]]
+
         elif after_equals != False:
             after_equals.append(block)
+
         else:
             if block == '=':
                 after_equals = []
@@ -127,44 +134,53 @@ def parse(text, ts=2):
     lines = line_tokenize(text)
 
     for line in lines:
-        if not line[0].strip():
-            indent = len(line.pop(0).expandtabs(ts))
-        else:
-            indent = 0
+        try:
+            if not line[0].strip():
+                indent = len(line.pop(0).expandtabs(ts))
+            else:
+                indent = 0
 
-        while indent < indent_stack[-1]:
-            indent_stack.pop()
-            item_stack.pop()
+            while indent < indent_stack[-1]:
+                indent_stack.pop()
+                item_stack.pop()
 
-        new_indent = indent > indent_stack[-1]
-        if new_indent:
-            item_stack.append(item_stack[-1].children[-1])
-            indent_stack.append(indent)
+            new_indent = indent > indent_stack[-1]
+            if new_indent:
+                item_stack.append(item_stack[-1].children[-1])
+                indent_stack.append(indent)
 
-        if '=' in line[1:]:
-            index = line.index('=')
-            line = line[:index] + ['>'] + line[index:]
+            if '=' in line[1:]:
+                index = line.index('=')
+                line = line[:index] + ['>'] + line[index:]
 
-        if '>' in line:
-            parent = item_stack[-1]
+            if '>' in line:
+                parent = item_stack[-1]
 
-            while '>' in line:
-                chevron = line.index('>')
-                item = DomEl(line[0:chevron], [])
-                # item = l[0:chevron] # list containing list (up to >)
-                # remove from front of this line:
-                line = line[chevron+1:]
-                # add to stacks:
-                parent.children.append(item)
-                parent = item
+                while '>' in line:
+                    chevron = line.index('>')
+                    item = DomEl(line[0:chevron], [])
+                    # item = l[0:chevron] # list containing list (up to >)
+                    # remove from front of this line:
+                    line = line[chevron+1:]
+                    # add to stacks:
+                    parent.children.append(item)
+                    parent = item
 
-            parent.children.append(DomEl(line, []))
+                parent.children.append(DomEl(line, []))
 
-        else:
-            # full line w/o >:
+            else:
+                # full line w/o >:
 
-            item = DomEl(line, [])
-            item_stack[-1].children.append(item)
+                item = DomEl(line, [])
+                item_stack[-1].children.append(item)
+        except Exception as e:
+            import traceback
+            print '---------------------------'
+            print 'Failed at:', line
+            print 'Item stack:', item_stack
+            print '---------------------------'
+            traceback.print_exc()
+            exit(1)
 
     return base
 
@@ -188,7 +204,7 @@ def render(parsed):
         rendered_children = []
 
     if details[0] == '!':
-        return '<!-- ' + details[1:] + '-->'
+        return '<!-- ' + ' '.join(details[1:]) + '-->'
     else:
         tag_info = details
         tag_contents = ''
@@ -212,6 +228,10 @@ def render(parsed):
     return '<' + tag + (' ' if parts_text else '') + parts_text + '>' \
             + (''.join(rendered_children)) + tag_contents.strip() \
             + '</' + tag + '>'
+
+def convert(text):
+    ''' convert a block of human-fake-markup stuff into normal HTML '''
+    return '<!doctype html>' + render(parse(text).children[0])
 
 
 if __name__ == '__main__':

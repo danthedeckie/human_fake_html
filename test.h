@@ -1,4 +1,4 @@
-html .nojs.article
+html
   head
     title = stuff
     link :rel:stylesheet :url:/css/main.css
