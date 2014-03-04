@@ -93,9 +93,16 @@ def render(parsed):
         bits = [render(x) for x in parsed]
     else:
         bits = []
-    
-    if '=' in base:
-        tag_info, tag_contents = base.split('=')
+   
+    print base
+    if not base:
+        return ''
+    elif base[0] == '=':
+        return base[1:]
+    elif base[0] == '!':
+        return '<!-- ' + base[1:] + '-->'
+    if '=' in shlex.split(base):
+        tag_info, tag_contents = base.split('=',1)
     else:
         tag_info = base
         tag_contents = ''

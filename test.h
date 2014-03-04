@@ -4,6 +4,7 @@ html .nojs.article
     link :rel:stylesheet :url:/css/main.css
     script :src:/js/jquery.js
     script :src:/js/main.js
+
   body .normal.single
     div #content
       header #mainheader
@@ -15,6 +16,7 @@ html .nojs.article
             li \
                 > a :href:links.html \
                 = Links
+   
       article #stuff
         header #things
           h1 = Article Header
