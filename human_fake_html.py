@@ -89,6 +89,8 @@ def render(parsed):
 
     base = parsed.pop(0)
 
+    if base[0] == '=':
+        return base[1:]
     if parsed:
         bits = [render(x) for x in parsed]
     else:

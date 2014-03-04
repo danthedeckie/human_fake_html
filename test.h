@@ -20,7 +20,12 @@ html .nojs.article
       article #stuff
         header #things
           h1 = Article Header
-        div .article_text = \
-            This is the article actual text.
+        div .article_text
+          = This is the article actual text.
+          a :href:link.html a link.
+          = and more text. \
+            and more. \
+            and more!
+
       footer #mainfooter
     

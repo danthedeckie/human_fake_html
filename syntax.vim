@@ -13,10 +13,12 @@ syn keyword syntaxElementKeyword html head body div ul ol li span article header
 syn region syntaxString start='"' end='"'
 syn region syntaxArg start=':' end=':' nextgroup=syntaxArgValue
 
+syn region syntaxPreProc start='{{' end='}}'
+
 " syn match syntaxArgValue '[^ ]*'
 syn match syntaxClass ' \.[^ ]*'
 syn match syntaxId '#[^ ]*'
-syn match syntaxContent '=.*$'
+syn region syntaxContent start='=' end='[^\\]$' contains=syntaxPreProc
 syn match syntaxPreProc '^#.*$'
 
 " Matches
