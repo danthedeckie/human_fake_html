@@ -96,7 +96,6 @@ def render(parsed):
     else:
         bits = []
    
-    print base
     if not base:
         return ''
     elif base[0] == '=':

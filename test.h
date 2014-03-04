@@ -22,7 +22,7 @@ html .nojs.article
           h1 = Article Header
         div .article_text
           = This is the article actual text.
-          a :href:link.html a link.
+          a :href:link.html = a link.
           = and more text. \
             and more. \
             and more!
